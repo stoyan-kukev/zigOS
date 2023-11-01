@@ -1,10 +1,8 @@
 const std = @import("std");
-const vga_terminal = @import("vga_terminal.zig");
 const builtin = std.builtin;
 
-const VgaTerminal = vga_terminal.VgaTerminal;
-const VgaEntry = vga_terminal.VgaEntry;
-const VgaColor = vga_terminal.VgaColor;
+const VgaColor = @import("vga/color.zig").VgaColor;
+const VgaTerminal = @import("vga/terminal.zig").VgaTerminal;
 
 const MultiBoot = extern struct {
     magic: i32,
@@ -42,12 +40,13 @@ pub fn panic(msg: []const u8, error_return_trace: ?*builtin.StackTrace, siz: ?us
 
 fn kmain() void {
     VgaTerminal.init();
-    var fg: VgaColor = VgaColor.Black;
-    var bg: VgaColor = VgaColor.Black;
-    for (0..300) |_| {
-        VgaTerminal.entry.set_color(fg, bg);
-        VgaTerminal.put("The industrial revolution and it's consequences");
+    var fg = VgaColor.White;
+    var bg = VgaColor.Black;
+    for (0..30) |_| {
+        VgaTerminal.put(" The industrial revolution and it's consequences ");
+
         fg.next();
         bg.prev();
+        VgaTerminal.entry.set_color(fg, bg);
     }
 }
