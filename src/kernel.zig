@@ -1,5 +1,4 @@
-const std = @import("std");
-const builtin = std.builtin;
+const builtin = @import("std").builtin;
 
 const VgaColor = @import("vga/color.zig").VgaColor;
 const VgaTerminal = @import("vga/terminal.zig").VgaTerminal;
@@ -31,22 +30,25 @@ pub export fn _start() callconv(.Naked) noreturn {
 }
 
 pub fn panic(msg: []const u8, error_return_trace: ?*builtin.StackTrace, siz: ?usize) noreturn {
-    _ = error_return_trace;
-    _ = siz;
-    _ = msg;
     @setCold(true);
+    _ = siz;
+    _ = error_return_trace;
+
+    VgaTerminal.write(msg);
+
     while (true) {}
 }
 
 fn kmain() void {
     VgaTerminal.init();
-    var fg = VgaColor.White;
-    var bg = VgaColor.Black;
-    for (0..30) |_| {
-        VgaTerminal.put(" The industrial revolution and it's consequences ");
 
-        fg.next();
-        bg.prev();
-        VgaTerminal.entry.set_color(fg, bg);
+    var foreground = VgaColor.Green;
+    var background = VgaColor.Black;
+    for (0..VgaTerminal.HEIGHT) |_| {
+        VgaTerminal.write("Welcome to zigOS! Running on Zig version 0.11.0!\n");
+
+        foreground.next();
+        background.prev();
+        VgaTerminal.entry.set_color(foreground, background);
     }
 }
