@@ -5,7 +5,7 @@ pub fn build(b: *std.Build) void {
     const optimize = b.standardOptimizeOption(.{});
 
     const exe = b.addExecutable(.{
-        .name = "hellos",
+        .name = "zigOS",
         .root_source_file = .{ .path = "src/kernel.zig" },
         .target = target,
         .optimize = optimize,
@@ -15,12 +15,13 @@ pub fn build(b: *std.Build) void {
 
     const run_cmd = b.addSystemCommand(&.{ "qemu-system-i386", "-kernel" });
     run_cmd.addArtifactArg(exe);
+
     run_cmd.step.dependOn(b.getInstallStep());
 
     if (b.args) |args| {
         run_cmd.addArgs(args);
     }
 
-    const run_step = b.step("run", "Run hellOS");
+    const run_step = b.step("run", "Run zigOS");
     run_step.dependOn(&run_cmd.step);
 }
