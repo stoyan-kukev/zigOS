@@ -42,8 +42,13 @@ pub fn panic(msg: []const u8, error_return_trace: ?*builtin.StackTrace, siz: ?us
 fn kmain() void {
     VgaTerminal.init();
 
+    var foreground = VgaColor.Green;
+    var background = VgaColor.Black;
     for (0..VgaTerminal.HEIGHT) |_| {
+        VgaTerminal.entry.set_color(foreground, background);
         VgaTerminal.write("Welcome to zigOS! Running on Zig version 0.11.0!\n");
-        VgaTerminal.entry.foreground.next();
+
+        foreground.next();
+        background.prev();
     }
 }

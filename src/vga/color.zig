@@ -17,18 +17,10 @@ pub const VgaColor = enum(u4) {
     White,
 
     pub fn next(self: *VgaColor) void {
-        if (self.* == VgaColor.White) {
-            self.* = VgaColor.Black;
-        } else {
-            self.* = @enumFromInt(@intFromEnum(self.*) + 1);
-        }
+        self.* = @enumFromInt(@intFromEnum(self.*) +% 1);
     }
 
     pub fn prev(self: *VgaColor) void {
-        if (self.* == VgaColor.Black) {
-            self.* = VgaColor.White;
-        } else {
-            self.* = @enumFromInt(@intFromEnum(self.*) - 1);
-        }
+        self.* = @enumFromInt(@intFromEnum(self.*) -% 1);
     }
 };
