@@ -1,50 +1,5 @@
-pub const VgaColor = enum(u8) {
-    Black,
-    Blue,
-    Green,
-    Cyan,
-    Red,
-    Magenta,
-    Brown,
-    LightGrey,
-    DarkGrey,
-    LightBlue,
-    LightGreen,
-    LightCyan,
-    LightRed,
-    LightMagenta,
-    LightBrown,
-    White,
-
-    pub fn next(self: *VgaColor) void {
-        if (self.* == VgaColor.White) {
-            self.* = VgaColor.Black;
-        }
-        self.* = @enumFromInt(@intFromEnum(self.*) + 1);
-    }
-
-    pub fn prev(self: *VgaColor) void {
-        if (self.* == VgaColor.Black) {
-            self.* = VgaColor.White;
-        }
-        self.* = @enumFromInt(@intFromEnum(self.*) - 1);
-    }
-};
-
-pub const VgaEntry = packed struct {
-    char: u8,
-    color: u8,
-
-    pub fn init(char: u8, fg: VgaColor, bg: VgaColor) VgaEntry {
-        var temp = VgaEntry{ .char = char, .color = 0 };
-        temp.set_color(fg, bg);
-        return temp;
-    }
-
-    pub fn set_color(self: *VgaEntry, fg: VgaColor, bg: VgaColor) void {
-        self.color = @intFromEnum(fg) | @intFromEnum(bg) << 4;
-    }
-};
+const VgaEntry = @import("entry.zig").VgaEntry;
+const VgaColor = @import("color.zig").VgaColor;
 
 pub const VgaTerminal = struct {
     const Self = @This();
