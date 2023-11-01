@@ -1,5 +1,10 @@
 const std = @import("std");
+const vga_terminal = @import("vga_terminal.zig");
 const builtin = std.builtin;
+
+const VgaTerminal = vga_terminal.VgaTerminal;
+const VgaEntry = vga_terminal.VgaEntry;
+const VgaColor = vga_terminal.VgaColor;
 
 const MultiBoot = extern struct {
     magic: i32,
@@ -36,6 +41,13 @@ pub fn panic(msg: []const u8, error_return_trace: ?*builtin.StackTrace, siz: ?us
 }
 
 fn kmain() void {
-    var a: i32 = 0;
-    a += 1;
+    VgaTerminal.init();
+    var fg: VgaColor = VgaColor.Black;
+    var bg: VgaColor = VgaColor.Black;
+    for (0..300) |_| {
+        VgaTerminal.entry.set_color(fg, bg);
+        VgaTerminal.put("The industrial revolution and it's consequences");
+        fg.next();
+        bg.prev();
+    }
 }
