@@ -9,7 +9,7 @@ pub const VgaTerminal = struct {
 
     var column: u16 = 0;
     var row: u16 = 0;
-    pub var entry: VgaEntry = VgaEntry.init(' ', VgaColor.White, VgaColor.Black);
+    pub var entry = VgaEntry.init(' ', VgaColor.White, VgaColor.Black);
     var buffer: [*]volatile u16 = @ptrFromInt(0xB8000);
 
     pub fn init() void {
