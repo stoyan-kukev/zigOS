@@ -4,8 +4,8 @@ const VgaColor = @import("color.zig").VgaColor;
 pub const VgaTerminal = struct {
     const Self = @This();
 
-    const WIDTH = 80;
-    const HEIGHT = 25;
+    pub const WIDTH = 80;
+    pub const HEIGHT = 25;
 
     var column: u16 = 0;
     var row: u16 = 0;
@@ -21,12 +21,20 @@ pub const VgaTerminal = struct {
         }
     }
 
-    pub fn put_char(char: u8) void {
-        Self.entry.char = char;
+    pub fn write_char(char: u8) void {
         const index: usize = Self.row * Self.WIDTH + Self.column;
-        Self.buffer[index] = @bitCast(Self.entry);
 
-        Self.column += 1;
+        switch (char) {
+            '\n' => {
+                Self.column = Self.WIDTH;
+            },
+            else => {
+                Self.entry.char = char;
+                Self.buffer[index] = @bitCast(Self.entry);
+                Self.column += 1;
+            },
+        }
+
         if (Self.column >= Self.WIDTH) {
             Self.column = 0;
             Self.row += 1;
@@ -45,9 +53,9 @@ pub const VgaTerminal = struct {
         }
     }
 
-    pub fn put(str: []const u8) void {
+    pub fn write(str: []const u8) void {
         for (str) |char| {
-            Self.put_char(char);
+            Self.write_char(char);
         }
     }
 };
