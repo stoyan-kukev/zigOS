@@ -1,4 +1,4 @@
-pub const VgaColor = enum(u8) {
+pub const VgaColor = enum(u4) {
     Black,
     Blue,
     Green,

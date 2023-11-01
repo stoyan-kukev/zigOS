@@ -10,15 +10,11 @@ pub const VgaTerminal = struct {
     var column: u16 = 0;
     var row: u16 = 0;
     pub var entry = VgaEntry.init(' ', VgaColor.White, VgaColor.Black);
-    var buffer: [*]volatile u16 = @ptrFromInt(0xB8000);
+    var buffer: [*]volatile VgaEntry = @ptrFromInt(0xB8000);
 
     pub fn init() void {
-        for (0..Self.HEIGHT) |y| {
-            for (0..Self.WIDTH) |x| {
-                const index: usize = y * Self.WIDTH + x;
-                Self.buffer[index] = @bitCast(Self.entry);
-            }
-        }
+        const size = Self.WIDTH * Self.HEIGHT;
+        @memset(Self.buffer[0..size], Self.entry);
     }
 
     pub fn write_char(char: u8) void {
@@ -30,7 +26,7 @@ pub const VgaTerminal = struct {
             },
             else => {
                 Self.entry.char = char;
-                Self.buffer[index] = @bitCast(Self.entry);
+                Self.buffer[index] = Self.entry;
                 Self.column += 1;
             },
         }
