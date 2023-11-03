@@ -2,6 +2,7 @@ const builtin = @import("std").builtin;
 
 const VgaColor = @import("vga/color.zig").VgaColor;
 const VgaTerminal = @import("vga/terminal.zig").VgaTerminal;
+const GDT = @import("gdt.zig").GDT;
 
 const MultiBoot = extern struct {
     magic: i32,
@@ -40,15 +41,32 @@ pub fn panic(msg: []const u8, error_return_trace: ?*builtin.StackTrace, siz: ?us
 }
 
 fn kmain() void {
+    const gdt = [_]GDT.Entry{
+        GDT.null_entry,
+        GDT.kernel_code,
+        GDT.kernel_data,
+        GDT.user_code,
+        GDT.user_data,
+    };
+
+    const gdt_descriptor = GDT.Descriptor{ .limit = (@sizeOf(GDT.Entry) * 5) - 1, .base = @intFromPtr(&gdt) };
+
+    asm volatile (
+    // \\ mov 4(%esp), %ax
+    // \\ mov %ax, %[gdt]
+    // \\ mov 8(%esp), %eax
+    // \\ mov %eax, %[gdt]
+        \\ lgdt %[gdt]
+        \\ mov 0x10, %ax
+        \\ mov %ax, %ds
+        \\ mov %ax, %es
+        \\ mov %ax, %fs
+        \\ mov %ax, %gs
+        \\ mov %ax, %ss
+        :
+        : [gdt] "*p" (&gdt_descriptor),
+    );
+
     VgaTerminal.init();
-
-    var foreground = VgaColor.Green;
-    var background = VgaColor.Black;
-    for (0..VgaTerminal.HEIGHT) |_| {
-        VgaTerminal.entry.set_color(foreground, background);
-        VgaTerminal.write("Welcome to zigOS! Running on Zig version 0.11.0!\n");
-
-        foreground.next();
-        background.prev();
-    }
+    VgaTerminal.write("Welcome to zigOS! Running on Zig version 0.11.0!\n");
 }
