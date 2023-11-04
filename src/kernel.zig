@@ -52,17 +52,17 @@ fn kmain() void {
     const gdt_descriptor = GDT.Descriptor{ .limit = (@sizeOf(GDT.Entry) * 5) - 1, .base = @intFromPtr(&gdt) };
 
     asm volatile (
-    // \\ mov 4(%esp), %ax
-    // \\ mov %ax, %[gdt]
-    // \\ mov 8(%esp), %eax
-    // \\ mov %eax, %[gdt]
+        \\ cli
         \\ lgdt %[gdt]
-        \\ mov 0x10, %ax
-        \\ mov %ax, %ds
-        \\ mov %ax, %es
-        \\ mov %ax, %fs
-        \\ mov %ax, %gs
-        \\ mov %ax, %ss
+        \\ mov %cr0, %eax
+        \\ or $1, %al
+        \\ mov %eax, %cr0
+        \\ mov $0x10, %eax
+        \\ mov %eax, %ds
+        \\ mov %eax, %es
+        \\ mov %eax, %fs
+        \\ mov %eax, %gs
+        \\ mov %eax, %ss
         :
         : [gdt] "*p" (&gdt_descriptor),
     );
